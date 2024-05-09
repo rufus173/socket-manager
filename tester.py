@@ -1,1 +1,1 @@
-import socket-manager.py
+import socket_manager
