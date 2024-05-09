@@ -1,10 +1,25 @@
 import socket
-class handler:
+class handler:# the idea is that the handler stores and controlls the sockets for you
 	def __init__(self):
 		self.server = socket.socket()
+		self.sockets = {}#stores and client sockets (not server)
+	def listen(self,amount):# this will listen for a specific number of connections, or if -1 is given, infinite untill stop_listen is called
+		self.listening = True
+		count = 0
+		while self.listening:
+			self.server.listen(1)
+			con, address = self.server.accept()
+			self.sockets[count] = con
+			count += 1
+			if amount >= count:
+				break
+	def stop_listen(self):#stops the listener, meant for when unlimited connections are wanted
+		self.listening = False
 	def auto_bind(self,port):#finds your ip and binds (requires port)
 		s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		s.connect(("8.8.8.8", 80))
 		ip_address = s.getsockname()[0]
+		s.close()
 		print("ip address:",ip_address)
 		self.server.bind((ip_address,port))
+		return self.server #returns the socket if you want it, allowing flexibility if you want to manage the socket from here on out
