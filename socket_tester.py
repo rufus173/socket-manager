@@ -30,7 +30,9 @@ if connect:
         try:
             print("""socket testing terminal v1.0
                   current commands include /close to close the socket and /recv to receive data and output it to the command line
-                  input commands with / and anything else will be encoded and sent""")
+                  input commands with / and anything else will be encoded and sent
+                  
+                  the /ls command can be used to list current open sockets and in conjunction with the /switch to change active sockets, addressed by their number""")
             while True:
                 cmd = input(">>>")
                 if cmd[0] == "/":
@@ -40,6 +42,21 @@ if connect:
                             server.close()
                         case "recv":
                             print(server.recv(4096))
+                        case "ls":
+                            count = 0
+                            for i in open_sockets:
+                                print("socket number",count,"info:",i.getsockname()[0],i.getsockname()[1])
+                                count += 1
+                        case "switch":
+                            while True:
+                                try:
+                                    selected_socket = int(input("select the socket number to switch to:"))
+                                    if selected_socket == -1:
+                                        break
+                                    server = open_sockets[selected_socket]
+                                    break
+                                except:
+                                    print("couldnt perform that operation. to cancel input -1")
                 else:
                     server.sendall(cmd.encode())
         except Exception as problem:
