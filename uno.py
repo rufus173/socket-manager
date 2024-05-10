@@ -1,5 +1,6 @@
 import socket
 import socket_manager
+import random
 
 #lets build the deck
 #we shall use the notation colour card, e.g r0 for red skip and gs for green skip
@@ -26,3 +27,24 @@ while True: #assume the user is incompetent
 
 handle = socket_manager.handler()
 handle.auto_bind(8032)
+handle.listen(pcount)
+
+order = 1 #set to -1 to reverse turn order
+random.shuffle(deck)
+hands = {}
+
+for i in range(pcount):
+    hands[i] = []
+    for j in range(7):
+        hands[i].append(deck.pop(0))
+
+print(hands)
+
+for i in range(pcount):
+    handle.sockets[i].recv(1024)
+    temp = ""
+    for c in hands[i]:
+        temp = temp + c + ","
+    temp = temp.rstrip(",")
+    handle.sockets[i].sendall(temp.encode())
+    handle.sockets[i].recv(1024)
