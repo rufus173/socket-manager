@@ -15,6 +15,7 @@ class handler:# the idea is that the handler stores and controlls the sockets fo
 			count += 1
 			if count >= amount:
 				print("finnishing search")
+				self.server.close()#stops connections leaking through
 				break
 	def stop_listen(self):#stops the listener, meant for when unlimited connections are wanted
 		self.listening = False
@@ -24,5 +25,6 @@ class handler:# the idea is that the handler stores and controlls the sockets fo
 		ip_address = s.getsockname()[0]
 		s.close()
 		print("ip address:",ip_address)
+		self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		self.server.bind((ip_address,port))
 		return self.server #returns the socket if you want it, allowing flexibility if you want to manage the socket from here on out
