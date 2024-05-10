@@ -30,6 +30,7 @@ handle.auto_bind(8032)
 handle.listen(pcount)
 
 order = 1 #set to -1 to reverse turn order
+turn = 0#whos turn it is
 random.shuffle(deck)
 hands = {}
 
@@ -39,12 +40,53 @@ for i in range(pcount):
         hands[i].append(deck.pop(0))
 
 print(hands)
+handle.sockets[i].recv(1024)
 
 for i in range(pcount):
-    handle.sockets[i].recv(1024)
     temp = ""
     for c in hands[i]:
         temp = temp + c + ","
     temp = temp.rstrip(",")
     handle.sockets[i].sendall(temp.encode())
     handle.sockets[i].recv(1024)
+
+discard = "w"
+while discard[0] == "w":#stops the game starting on a wildcard
+    discard = deck.pop(0)
+print("discard pile",discard)
+
+while True:#the mainloop
+
+    #commands are issued telling the client what to expect, so go for their turn and discard to receive the discard pile
+
+    if turn > pcount-1:#this before check is to allow for skip turns
+        turn = 0
+    elif turn < 0:
+        turn = pcount-1
+    turn += order #gonna increment or decrement depending on direction of play
+    if turn > pcount-1:
+        turn = 0
+    elif turn < 0:
+        turn = pcount-1
+    for i in range(pcount):
+        handle.sockets[i].sendall(b"discard")
+        handle.sockets[i].recv(1024)
+        handle.sockets[i].sendall(discard.encode())
+        handle.sockets[i].recv(1024)
+
+    handle.sockets[turn].sendall(b"go")#tell them its their turn
+    handle.sockets[turn].recv(1024)
+    temp = ""
+    for c in hands[turn]:
+        temp = temp + c + ","
+    temp = temp.rstrip(",")
+    handle.sockets[turn].sendall(temp.encode())#resending their hand so i can easily deal with plus 2s and 4s
+    response = handle.sockets[turn].recv(1024)#we get their card, or a request to draw 1
+    match response:
+        case "draw":
+            new_card = deck.pop(0)
+            hands[turn].append(new_card)
+            handle.sockets[turn].sendall(new_card.encode())
+        case "card":
+            handle.sockets[turn].sendall(b"_")
+            discard = handle.sockets[turn].recv(1024)
