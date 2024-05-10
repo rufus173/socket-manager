@@ -52,8 +52,8 @@ if connect:
             while True:
                 cmd = input(">>>")
                 if cmd[0] == "/":
-                    cmd = cmd[1:]
-                    match cmd:
+                    cmd = cmd[1:].split(" ")
+                    match cmd[0]:
                         case "close":
                             server.close()
                         case "recv":
@@ -68,17 +68,27 @@ if connect:
                                 print("socket number",count,"info:",i.getsockname()[0],i.getsockname()[1])
                                 count += 1
                         case "switch":
-                            while True:
-                                try:
-                                    selected_socket = int(input("select the socket number to switch to:"))
-                                    if selected_socket == -1:
-                                        break
+                            if len(cmd) == 2:
+                                selected_socket = int(cmd[1])
+                                if 0 <= selected_socket < len(open_sockets):
+                                    print("switching to",selected_socket)
                                     open_sockets[current_sock_num] = server #store the current socket back in open_sockets
                                     current_sock_num = selected_socket #update the selectec socket
                                     server = open_sockets[selected_socket] #set server to the new current socket
-                                    break
-                                except:
-                                    print("couldnt perform that operation. to cancel input -1")
+                                else:
+                                    print("couldnt perform that operation.")
+                            else:
+                                while True:
+                                    try:
+                                        selected_socket = int(input("select the socket number to switch to:"))
+                                        if selected_socket == -1:
+                                            break
+                                        open_sockets[current_sock_num] = server #store the current socket back in open_sockets
+                                        current_sock_num = selected_socket #update the selectec socket
+                                        server = open_sockets[selected_socket] #set server to the new current socket
+                                        break
+                                    except:
+                                        print("couldnt perform that operation. to cancel input -1")
                         case "rescan":
                             port_scan()
                 else:
