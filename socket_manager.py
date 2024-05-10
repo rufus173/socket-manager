@@ -8,10 +8,13 @@ class handler:# the idea is that the handler stores and controlls the sockets fo
 		count = 0
 		while self.listening:
 			self.server.listen(1)
+			print("listening")
 			con, address = self.server.accept()
-			self.sockets[count] = con
+			print("accepted connection")
+			self.sockets[count] = con #stored as the noumber of the order they connected in (index at 0)
 			count += 1
-			if amount >= count:
+			if count >= amount:
+				print("finnishing search")
 				break
 	def stop_listen(self):#stops the listener, meant for when unlimited connections are wanted
 		self.listening = False
