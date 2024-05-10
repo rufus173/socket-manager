@@ -37,6 +37,8 @@ def port_scan():
 port_scan()
 
 connect = True
+current_sock_num = 0
+
 if connect:
     for server in open_sockets:
         try:
@@ -71,7 +73,9 @@ if connect:
                                     selected_socket = int(input("select the socket number to switch to:"))
                                     if selected_socket == -1:
                                         break
-                                    server = open_sockets[selected_socket]
+                                    open_sockets[current_sock_num] = server #store the current socket back in open_sockets
+                                    current_sock_num = selected_socket #update the selectec socket
+                                    server = open_sockets[selected_socket] #set server to the new current socket
                                     break
                                 except:
                                     print("couldnt perform that operation. to cancel input -1")
@@ -82,3 +86,4 @@ if connect:
         except Exception as problem:
             print("error connecting with port",server.getsockname()[1],problem)
             continue
+        current_sock_num += 1
