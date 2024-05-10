@@ -1,5 +1,6 @@
 import socket
 from contextlib import closing
+import time
 
 #get ip
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -9,28 +10,24 @@ s.close()
 
 
 def check_socket(host, port):
-    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
-        if sock.connect_ex((host, port)) == 0:
-            print(str(port)+" is open")
-            return port
+    sock = socket.socket()
+    sock_con = sock.connect_ex((host, port))
+    if sock_con == 0:
+        print(str(port)+" is open")
+        return sock
 
-open_ports = []
+open_sockets = []
 print("auto detecting ports")
-while open_ports == []:
+while open_sockets == []:#gonna put some open sockets into a list to cycle through
     for i in range(8000,9000):
-        port = check_socket(ip_address,i)
-        if port:
-            open_ports.append(port)
+        sock = check_socket(ip_address,i)
+        if sock:
+            open_sockets.append(sock)
 
 connect = True
 if connect:
-    server = socket.socket()
-    for port in open_ports:
-        if port == None:
-            continue #im lazy the function stores the port as none if the port is not open
+    for server in open_sockets:
         try:
-            print("attempting to connect to port",port)
-            server.connect((ip_address,port))
             print("""socket testing terminal v1.0
                   current commands include /close to close the socket and /recv to receive data and output it to the command line
                   input commands with / and anything else will be encoded and sent""")
@@ -46,5 +43,5 @@ if connect:
                 else:
                     server.sendall(cmd.encode())
         except Exception as problem:
-            print("error connecting with port",port,problem)
+            print("error connecting with port",server.getsockname()[1],problem)
             continue
