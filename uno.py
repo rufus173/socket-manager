@@ -80,7 +80,7 @@ while True:#the mainloop
         temp = temp + c + ","
     temp = temp.rstrip(",")
     handle.sockets[turn].sendall(temp.encode())#resending their hand so i can easily deal with plus 2s and 4s
-    response = handle.sockets[turn].recv(1024)#we get their card, or a request to draw 1
+    response = handle.sockets[turn].recv(1024).decode()#we get their card, or a request to draw 1
     match response:
         case "draw":
             new_card = deck.pop(0)
@@ -88,5 +88,6 @@ while True:#the mainloop
             handle.sockets[turn].sendall(new_card.encode())
         case "card":
             handle.sockets[turn].sendall(b"_")
-            discard = handle.sockets[turn].recv(1024)
-            # logic neeeded to work out plus 2s and plus 4s
+            discard = handle.sockets[turn].recv(1024).decode()
+            # logic neeeded to work out plus 2s and plus 4s and logic for choosing colours
+    print("discard pile",discard)
