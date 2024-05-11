@@ -4,16 +4,16 @@ import random
 
 #lets build the deck
 #we shall use the notation colour card, e.g r0 for red skip and gs for green skip
-deck = ["r0","g0","b0","y0"] #we can use w for wild , e.g. w0 for wild card and w4 for wild +4. for plus 2 we can use colour + p, e.g. gp for green +2
+deck = ["r0","g0","b0","y0"] #we can use w for wild , e.g. w0 for wild card and wf for wild +4. for plus 2 we can use colour + t, e.g. gp for green +t
 for i in range(2):
     for c in ["r","g","b","y"]:
         for n in range(9):
             deck.append(c+str(n+1))
-        for s in ["s","r","p"]:
+        for s in ["s","r","t"]:
             deck.append(c+s)
 for i in range(4):
     deck.append("w0")
-    deck.append("w4")
+    deck.append("wf")#wild plus 4
 print(deck)
 
 while True: #assume the user is incompetent
@@ -40,7 +40,6 @@ for i in range(pcount):
         hands[i].append(deck.pop(0))
 
 print(hands)
-handle.sockets[i].recv(1024)
 
 for i in range(pcount):
     temp = ""
@@ -90,3 +89,4 @@ while True:#the mainloop
         case "card":
             handle.sockets[turn].sendall(b"_")
             discard = handle.sockets[turn].recv(1024)
+            # logic neeeded to work out plus 2s and plus 4s
