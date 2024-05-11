@@ -21,8 +21,26 @@ while True:#mainloop
     response = server.recv(1024).decode()
     match response:
         case "discard":
+            print("receiving discard")
             server.sendall(b"_")
             discard = server.recv(1024).decode()
             server.sendall(b"_")
+            print(discard)
         case "go":
-            pass #insert code here for your turn
+            print("your turn")
+            server.sendall(b"_")#acknowledgement
+
+            #we recieve an updated hand
+            hand = server.recv(4096).decode().split(",")
+            print(hand)
+            
+            #insert code for logic of playing cards
+            chosen_card = input("card >>>")
+
+            if True:#add logic for wether to draw or play
+                server.sendall(b"card")#tell the server we are playing a card
+                server.recv(1024)
+                server.sendall(chosen_card.encode())
+            else:
+                server.sendall(b"draw")
+                hand.append(server.recv(1024).decode())
