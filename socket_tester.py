@@ -1,3 +1,15 @@
+#                 ____                           
+#     _______  __/ __/_  _______                 
+#    / ___/ / / / /_/ / / / ___/  ______         
+#   / /  / /_/ / __/ /_/ (__  )  /_____/         
+#  /_/   \__,_/_/  \__,_/____/                   
+#                 ______                         
+#     _________  / __/ /__      ______ _________ 
+#    / ___/ __ \/ /_/ __/ | /| / / __ `/ ___/ _ \
+#   (__  ) /_/ / __/ /_ | |/ |/ / /_/ / /  /  __/
+#  /____/\____/_/  \__/ |__/|__/\__,_/_/   \___/                 
+
+
 import socket
 from contextlib import closing
 import time
@@ -42,13 +54,26 @@ current_sock_num = 0
 if connect:
     for server in open_sockets:
         try:
-            print("""socket testing terminal v1.0
-                  current commands include /close to close the socket and /recv to receive data and output it to the command line
-                  input commands with / and anything else will be encoded and sent
+            print("""
+                 ____                           
+     _______  __/ __/_  _______                 
+    / ___/ / / / /_/ / / / ___/  ______         
+   / /  / /_/ / __/ /_/ (__  )  /_____/         
+  /_/   \__,_/_/  \__,_/____/                   
+                 ______                         
+     _________  / __/ /__      ______ _________ 
+    / ___/ __ \/ /_/ __/ | /| / / __ `/ ___/ _ \ 
+   (__  ) /_/ / __/ /_ | |/ |/ / /_/ / /  /  __/
+  /____/\____/_/  \__/ |__/|__/\__,_/_/   \___/                 
+
+
+socket testing terminal v1.0
+current commands include /close to close the socket and /recv to receive data and output it to the command line
+input commands with / and anything else will be encoded and sent
                   
-                  the /ls command can be used to list current open sockets and in conjunction with the /switch to change active sockets, addressed by their number
+the /ls command can be used to list current open sockets and in conjunction with the /switch to change active sockets, addressed by their number
                   
-                  the /rescan command will scan the ports again to try and establish more connections""")
+the /rescan command will scan the ports again to try and establish more connections""")
             while True:
                 cmd = input(">>>")
                 if cmd[0] == "/":
