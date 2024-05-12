@@ -1,4 +1,23 @@
 import socket
+
+if __name__ == '__main__':
+	print("""
+                 ____                           
+     _______  __/ __/_  _______                 
+    / ___/ / / / /_/ / / / ___/  ______         
+   / /  / /_/ / __/ /_/ (__  )  /_____/         
+  /_/   \__,_/_/  \__,_/____/                   
+                 ______                         
+     _________  / __/ /__      ______ _________ 
+    / ___/ __ \/ /_/ __/ | /| / / __ `/ ___/ _ \ 
+   (__  ) /_/ / __/ /_ | |/ |/ / /_/ / /  /  __/
+  /____/\____/_/  \__/ |__/|__/\__,_/_/   \___/                 
+
+	   
+	This program is a module.
+""")
+
+
 class handler:# the idea is that the handler stores and controlls the sockets for you
 	def __init__(self):
 		self.server = socket.socket()
@@ -28,3 +47,10 @@ class handler:# the idea is that the handler stores and controlls the sockets fo
 		self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		self.server.bind((ip_address,port))
 		return self.server #returns the socket if you want it, allowing flexibility if you want to manage the socket from here on out
+	def recvall(self,server):#designed to receive every last byte of data when sending large amounts reliably
+		buffer = b""
+		recv = b""#data not decoded
+		while recv != b"\0":#end of transmition signifyed by this character
+			buffer += recv
+			recv = server.recv(1)
+		return buffer
