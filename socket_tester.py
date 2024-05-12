@@ -63,7 +63,9 @@ the /ls command can be used to list current open sockets and in conjunction with
                   
 the /rescan command will scan the ports again to try and establish more connections
                   
-the /sendall is for socket_manager modules recvall function""")
+the /sendall is for socket_manager modules recvall function
+                  
+the /connect <port> <ip> allows you to create another connection. if ip is not specified, the local one is use instead""")
             while True:
                 cmd = input(">>>")
                 if cmd[0] == "/":
@@ -111,6 +113,19 @@ the /sendall is for socket_manager modules recvall function""")
                                 server.sendall((input("enter message >>>")+"\0").encode())
                             else:
                                 server.sendall((cmd[1]+"\0").encode())#endstop character
+                        case "connect":
+                            try:
+                                if len(cmd) == 2:
+                                    connecting_ip = ip_address
+                                else: 
+                                    connecting_ip = cmd[2]
+                                connecting_port = cmd[1]
+                                new_sock = socket.socket()
+                                new_sock.connect((connecting_ip,int(connecting_port)))
+                                open_sockets.append(new_sock)
+                                print("successfully connected!")
+                            except Exception as problem:
+                                print(problem)
                 else:
                     server.sendall(cmd.encode())
         except Exception as problem:
