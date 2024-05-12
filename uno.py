@@ -17,6 +17,7 @@ import random
 #lets build the deck
 #we shall use the notation colour card, e.g r0 for red zero and gs for green skip
 deck = ["r0","g0","b0","y0"] #we can use w for wild , e.g. wn for wild card and wf for wild +4. for plus 2 we can use colour + t, e.g. gp for green +t
+#when wildcards are played a colour is selected and they will become colour + type, eg wf(wild +4) becomes gf(green +4)
 for i in range(2):
     for c in ["r","g","b","y"]:
         for n in range(9):
@@ -43,6 +44,7 @@ handle.listen(pcount)
 
 order = 1 #set to -1 to reverse turn order
 turn = 0#whos turn it is
+card_stack = 0 #for holding info about stacked +2s and +4s
 random.shuffle(deck)
 hands = {}
 
@@ -102,5 +104,14 @@ while True:#the mainloop
         case "card":
             handle.sockets[turn].sendall(b"_")
             discard = handle.sockets[turn].recv(1024).decode()
+            hands[turn].remove(discard)#remnove cards from their hand that they play
+            if discard[0] == "w":
+                handle.sockets[turn].sendall(b"choose colour")
+                colour = handle.sockets[turn].recv(1024).decode()
+                discard = colour + discard[1]
+                handle.sockets[turn].sendall(b"_")
+            else:
+                handle.sockets[turn].sendall(b"no action needed")
+            handle.sockets[turn].recv(1024)#acknowledge
             # logic neeeded to work out plus 2s and plus 4s and logic for choosing colours
     print("discard pile",discard)

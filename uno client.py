@@ -9,7 +9,7 @@ print("""                 ____
    (__  ) /_/ / __/ /_ | |/ |/ / /_/ / /  /  __/
   /____/\____/_/  \__/ |__/|__/\__,_/_/   \___/
 
-    V1.1 | uno client for multiplayer uno      """)         
+    V2.1 | uno client for multiplayer uno      """)         
 
 
 import socket
@@ -86,6 +86,7 @@ server = socket.socket()
 server.connect((ip,8032))
 
 hand = server.recv(4096).decode().split(",")
+print("\n\n\nyour starting hand")
 display(hand)
 server.sendall(b"_")#acknowledgement packet
 
@@ -97,23 +98,61 @@ while True:#mainloop
             discard = recv_data(server).decode()
             server.sendall(b"_")
         case "go":
-            display(hand)
-            print("your hand\n\ndiscard pile")
-            display([discard])#i spent so long debugging but the logic error of not having discard be a list broke the display function
-            print("your turn")
             server.sendall(b"_")#acknowledgement
 
             #we recieve an updated hand
             hand = server.recv(4096).decode().split(",")
-            print(hand)
+            print("\n\n\n\n\n\n\n\n------------- Your turn -------------")
+            print("Your hand")
+            display(hand)
+            print("Discard pile")
+            display([discard])#i spent so long debugging but the logic error of not having discard be a list broke the display function
             
-            #insert code for logic of playing cards
-            chosen_card = input("card >>>")
+            #logic for playable cards
+            can_play = False
+            playable_cards = []
+            for card in hand:
+                if card[0] == discard[0] or card[1] == discard[1] or card[0] == "w":
+                    can_play = True
+                    playable_cards.append(card)
 
-            if True:#add logic for wether to draw or play
+
+            if can_play:#add logic for wether to draw or play
+                count = 1
+                option_str = ""
+                print("Options for you to play are as follows:")
+                for i in playable_cards:
+                    single_option = "   ("+str(count)+")   "
+                    option_str += single_option
+                    for x in range(9-len(single_option)):
+                        option_str += " "#pads out the space meaning all the numbers are aligned
+                    count += 1
+                print(option_str)
+                display(playable_cards)#must be sent in a list
+                while True:
+                    try:
+                        chosen_card = playable_cards[int(input("Number >>>"))-1]
+                        break
+                    except:
+                        pass
                 server.sendall(b"card")#tell the server we are playing a card
                 server.recv(1024)
                 server.sendall(chosen_card.encode())
+                response = server.recv(1024).decode()
+                if response == "choose colour":
+                    print("Choose a colour for your wildcard.\n(1) red  (2) green  (3) blue  (4) yellow")
+                    while True:
+                        try:
+                            colour = ["r","g","b","y"][int(input("number >>>"))-1]
+                            break
+                        except:
+                            pass
+                    server.sendall(colour.encode())
+                    server.recv(1024)
+                    server.sendall(b"_")
+                else:
+                    server.sendall(b"_")
             else:
+                print("\n\n\nThere were no cards for you to play,\n meaning you drew one.\n\n\n")
                 server.sendall(b"draw")
                 hand.append(server.recv(1024).decode())
