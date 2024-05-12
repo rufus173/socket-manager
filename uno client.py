@@ -135,6 +135,12 @@ while True:#mainloop
                         break
                     except:
                         pass
+                if chosen_card[1] == "s":
+                    print("\n\n\nSkipped next players turn\n\n\n")
+                    time.sleep(1)
+                if chosen_card[1] == "r":
+                    print("\n\n\nReversed turn order\n\n\n")
+                    time.sleep(1)
                 server.sendall(b"card")#tell the server we are playing a card
                 server.recv(1024)
                 server.sendall(chosen_card.encode())
@@ -156,3 +162,40 @@ while True:#mainloop
                 print("\n\n\nThere were no cards for you to play,\n meaning you drew one.\n\n\n")
                 server.sendall(b"draw")
                 hand.append(server.recv(1024).decode())
+        case "plus":
+            server.sendall(b"_")
+            hand = server.recv(4096).decode().split(",")
+            print("\n\n\n\n\n\n\n\n------------- Your turn -------------")
+            print("Your hand")
+            display(hand)
+            print("Discard pile")
+            display([discard])
+
+            playable_cards = []
+            for card in hand:
+                if card[0] == discard[0] or card[1] == discard[1] or card[0] == "w":
+                    can_play = True
+                    playable_cards.append(card)
+            if playable_cards != []:
+                print("\n\n\nYou must respond to the plus card. What will you do it with?")
+                count = 1
+                option_str = ""
+                print("Options for you to respond are as follows:")
+                for i in playable_cards:
+                    single_option = "   ("+str(count)+")   "
+                    option_str += single_option
+                    for x in range(9-len(single_option)):
+                        option_str += " "#pads out the space meaning all the numbers are aligned
+                    count += 1
+                print(option_str)
+                display(playable_cards)#must be sent in a list
+                while True:
+                    try:
+                        chosen_card = playable_cards[int(input("Number >>>"))-1]
+                        break
+                    except:
+                        pass
+            else:
+                print("You cant respond to the plus cards. Now drawing...")
+                server.sendall(b"no response")
+            hand = server.recv(4096).decode().split(",")

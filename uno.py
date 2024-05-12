@@ -88,30 +88,65 @@ while True:#the mainloop
         handle.sockets[i].sendall((discard+"\r").encode())
         handle.sockets[i].recv(1024)
 
-    handle.sockets[turn].sendall(b"go")#tell them its their turn
-    handle.sockets[turn].recv(1024)
-    temp = ""
-    for c in hands[turn]:
-        temp = temp + c + ","
-    temp = temp.rstrip(",")
-    handle.sockets[turn].sendall(temp.encode())#resending their hand so i can easily deal with plus 2s and 4s
-    response = handle.sockets[turn].recv(1024).decode()#we get their card, or a request to draw 1
-    match response:
-        case "draw":
-            new_card = deck.pop(0)
-            hands[turn].append(new_card)
-            handle.sockets[turn].sendall(new_card.encode())
-        case "card":
-            handle.sockets[turn].sendall(b"_")
-            discard = handle.sockets[turn].recv(1024).decode()
-            hands[turn].remove(discard)#remnove cards from their hand that they play
-            if discard[0] == "w":
-                handle.sockets[turn].sendall(b"choose colour")
-                colour = handle.sockets[turn].recv(1024).decode()
-                discard = colour + discard[1]
+    if not(discard[1] == "f" or discard == "t"):#if they have not been +4d or +2d
+        handle.sockets[turn].sendall(b"go")#tell them its their turn
+        handle.sockets[turn].recv(1024)
+        temp = ""
+        for c in hands[turn]:
+            temp = temp + c + ","
+        temp = temp.rstrip(",")
+        handle.sockets[turn].sendall(temp.encode())#resending their hand so i can easily deal with plus 2s and 4s
+        response = handle.sockets[turn].recv(1024).decode()#we get their card, or a request to draw 1
+        match response:
+            case "draw":
+                new_card = deck.pop(0)
+                hands[turn].append(new_card)
+                handle.sockets[turn].sendall(new_card.encode())
+            case "card":
                 handle.sockets[turn].sendall(b"_")
-            else:
-                handle.sockets[turn].sendall(b"no action needed")
-            handle.sockets[turn].recv(1024)#acknowledge
-            # logic neeeded to work out plus 2s and plus 4s and logic for choosing colours
-    print("discard pile",discard)
+                discard = handle.sockets[turn].recv(1024).decode()
+                hands[turn].remove(discard)#remnove cards from their hand that they play
+
+                #special cards game logic
+                if discard[0] == "w":
+                    handle.sockets[turn].sendall(b"choose colour")
+                    colour = handle.sockets[turn].recv(1024).decode()
+                    discard = colour + discard[1]
+                    handle.sockets[turn].sendall(b"_")
+                else:
+                    handle.sockets[turn].sendall(b"no action needed")
+                handle.sockets[turn].recv(1024)#acknowledge
+
+                if discard[1] == "r":#reverse
+                    order * -1
+                    print("reversed turn order to",order)
+                if discard[1] == "s":#skip
+                    turn += order
+                    print("skipped next players turn")
+                if discard[1] == "t":# +2
+                    card_stack += 2
+                    print("added 2 to stack")
+                if discard[1] == "f":# +4
+                    card_stack += 4
+                    print("added 4 to stack")
+                # logic neeeded to work out plus 2s and plus 4s and logic for choosing colours
+        print("discard pile",discard)
+    else:
+        handle.sockets[turn].sendall(b"plus")
+        print("doing plus card logic")
+        handle.sockets[turn].recv(1024)
+        temp = ""
+        for c in hands[turn]:
+            temp = temp + c + ","
+        temp = temp.rstrip(",")
+        handle.sockets[turn].sendall(temp.encode())#resending their had to update them
+        response = handle.sockets[turn].recv(1024).decode()
+        if response == "no response":
+            print("giving this player the stack of",card_stack)
+            for i in range(card_stack):
+                hands[turn].append(deck.pop(0))
+                temp = ""
+                for c in hands[turn]:
+                    temp = temp + c + ","
+                temp = temp.rstrip(",")
+                handle.sockets[turn].sendall(temp.encode())
