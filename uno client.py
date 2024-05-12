@@ -20,8 +20,17 @@ import time
 ip = "86.160.112.140"
 
 
+def recv_data(server):#my program was struggling to get all the data through
+    data = b""
+    msg = b""
+    while msg != b"\r":
+        data += msg 
+        msg = server.recv(1)
+    return data
+    
+
 #card display
-def display(hand):
+def display(hand):#MAKE SURE TO SEND THIS A LIST AND NOT A STRING
     hand_str = "" #we need to build it 1 line at a time,and ensure colouring and symbols are correct
     top = ""
     mid_top = ""
@@ -67,6 +76,7 @@ def display(hand):
     hand_str += top + "\n" + mid_top + "\n" + mid + "\n" +  mid_bottom + "\n" + bottom
     print(hand_str)
 
+
 #just setting up variables
 hand = []
 discard = ""
@@ -76,7 +86,6 @@ server = socket.socket()
 server.connect((ip,8032))
 
 hand = server.recv(4096).decode().split(",")
-print(hand)
 display(hand)
 server.sendall(b"_")#acknowledgement packet
 
@@ -84,12 +93,13 @@ while True:#mainloop
     response = server.recv(1024).decode()
     match response:
         case "discard":
-            print("receiving discard")
             server.sendall(b"_")
-            discard = server.recv(1024).decode()
+            discard = recv_data(server).decode()
             server.sendall(b"_")
-            print(discard)
         case "go":
+            display(hand)
+            print("your hand\n\ndiscard pile")
+            display([discard])#i spent so long debugging but the logic error of not having discard be a list broke the display function
             print("your turn")
             server.sendall(b"_")#acknowledgement
 

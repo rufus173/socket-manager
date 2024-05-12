@@ -15,16 +15,16 @@ import socket_manager
 import random
 
 #lets build the deck
-#we shall use the notation colour card, e.g r0 for red skip and gs for green skip
+#we shall use the notation colour card, e.g r0 for red zero and gs for green skip
 deck = ["r0","g0","b0","y0"] #we can use w for wild , e.g. wn for wild card and wf for wild +4. for plus 2 we can use colour + t, e.g. gp for green +t
 for i in range(2):
     for c in ["r","g","b","y"]:
         for n in range(9):
             deck.append(c+str(n+1))
-        for s in ["s","r","t"]:
+        for s in ["s","r","t"]:#skip, reverse, plus 2
             deck.append(c+s)
 for i in range(4):
-    deck.append("w0")
+    deck.append("wn")#wild
     deck.append("wf")#wild plus 4
 print(deck)
 
@@ -82,7 +82,8 @@ while True:#the mainloop
     for i in range(pcount):
         handle.sockets[i].sendall(b"discard")
         handle.sockets[i].recv(1024)
-        handle.sockets[i].sendall(discard.encode())
+        print("sending discard of",(discard+"\r").encode())
+        handle.sockets[i].sendall((discard+"\r").encode())
         handle.sockets[i].recv(1024)
 
     handle.sockets[turn].sendall(b"go")#tell them its their turn
