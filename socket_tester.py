@@ -135,6 +135,8 @@ if connect:
                             print("successfully connected!")
                         except Exception as problem:
                             print("\033[31m"+str(problem)+"\033[0m")
+                    case "exit":
+                        exit()
             else:
                 server.sendall(cmd.encode())
         except Exception as problem:
