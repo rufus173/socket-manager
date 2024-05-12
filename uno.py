@@ -16,7 +16,7 @@ import random
 
 #lets build the deck
 #we shall use the notation colour card, e.g r0 for red skip and gs for green skip
-deck = ["r0","g0","b0","y0"] #we can use w for wild , e.g. w0 for wild card and wf for wild +4. for plus 2 we can use colour + t, e.g. gp for green +t
+deck = ["r0","g0","b0","y0"] #we can use w for wild , e.g. wn for wild card and wf for wild +4. for plus 2 we can use colour + t, e.g. gp for green +t
 for i in range(2):
     for c in ["r","g","b","y"]:
         for n in range(9):
