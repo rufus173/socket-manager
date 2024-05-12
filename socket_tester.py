@@ -1,15 +1,3 @@
-#                 ____                           
-#     _______  __/ __/_  _______                 
-#    / ___/ / / / /_/ / / / ___/  ______         
-#   / /  / /_/ / __/ /_/ (__  )  /_____/         
-#  /_/   \__,_/_/  \__,_/____/                   
-#                 ______                         
-#     _________  / __/ /__      ______ _________ 
-#    / ___/ __ \/ /_/ __/ | /| / / __ `/ ___/ _ \
-#   (__  ) /_/ / __/ /_ | |/ |/ / /_/ / /  /  __/
-#  /____/\____/_/  \__/ |__/|__/\__,_/_/   \___/                 
-
-
 import socket
 from contextlib import closing
 import time
@@ -73,7 +61,9 @@ input commands with / and anything else will be encoded and sent
                   
 the /ls command can be used to list current open sockets and in conjunction with the /switch to change active sockets, addressed by their number
                   
-the /rescan command will scan the ports again to try and establish more connections""")
+the /rescan command will scan the ports again to try and establish more connections
+                  
+the /sendall is for socket_manager modules recvall function""")
             while True:
                 cmd = input(">>>")
                 if cmd[0] == "/":
@@ -116,6 +106,11 @@ the /rescan command will scan the ports again to try and establish more connecti
                                         print("couldnt perform that operation. to cancel input -1")
                         case "rescan":
                             port_scan()
+                        case "sendall":#for the recvall of socket_manager module
+                            if len(cmd) == 1:#arguments or not
+                                server.sendall((input("enter message >>>")+"\0").encode())
+                            else:
+                                server.sendall((cmd[1]+"\0").encode())#endstop character
                 else:
                     server.sendall(cmd.encode())
         except Exception as problem:
