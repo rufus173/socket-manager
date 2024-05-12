@@ -39,8 +39,9 @@ def port_scan():
 
 connect = True
 current_sock_num = 0
+server_details = "\033[32mnot connected\033[0m"
 
-print("""
+print("""\033[36m
                  ____                           
      _______  __/ __/_  _______                 
     / ___/ / / / /_/ / / / ___/  ______         
@@ -53,7 +54,7 @@ print("""
   /____/\____/_/  \__/ |__/|__/\__,_/_/   \___/                 
 
 
-socket testing terminal v2.0
+socket testing terminal v2.1
 to start, try /scan to try to open up a connection
       
 input commands with / and anything else will be encoded and sent
@@ -63,12 +64,17 @@ current commands include:
 the /ls command can be used to list current open sockets and in conjunction with the /switch to change active sockets, addressed by their number
 the /scan command will scan the ports again to try and establish more connections
 the /sendall is for socket_manager modules recvall function
-the /connect <port> <ip> allows you to create another connection. if ip is not specified, the local one is use instead""")
+the /connect <port> <ip> allows you to create another connection. if ip is not specified, the local one is use instead\033[0m""")
 
 if connect:    
     while True:
         try:
-            cmd = input(">>>")
+            try:#get some details of the server to display to the user
+                host, port = server.getpeername()
+                server_details = "\033[32m({}) {}:{}\033[0m".format(current_sock_num,host,port)
+            except:
+                pass
+            cmd = input(server_details+" $ ")
             if cmd[0] == "/":
                 cmd = cmd[1:].split(" ")
                 match cmd[0]:
@@ -79,7 +85,7 @@ if connect:
                             server.settimeout(5.0)
                             print(server.recv(4096))
                         except Exception as problem:
-                            print(problem)
+                            print("\033[31m"+str(problem)+"\033[0m")
                     case "ls":
                         count = 0
                         for i in open_sockets:
@@ -110,6 +116,7 @@ if connect:
                     case "scan":
                         port_scan()
                         server = open_sockets[-1]
+                        current_sock_num = len(open_sockets)-1
                     case "sendall":#for the recvall of socket_manager module
                         if len(cmd) == 1:#arguments or not
                             server.sendall((input("enter message >>>")+"\0").encode())
@@ -127,8 +134,8 @@ if connect:
                             open_sockets.append(new_sock)
                             print("successfully connected!")
                         except Exception as problem:
-                            print(problem)
+                            print("\033[31m"+str(problem)+"\033[0m")
             else:
                 server.sendall(cmd.encode())
         except Exception as problem:
-            print(problem)
+            print("\033[31m"+str(problem)+"\033[0m")
