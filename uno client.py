@@ -173,7 +173,7 @@ while True:#mainloop
 
             playable_cards = []
             for card in hand:
-                if card[0] == discard[0] or card[1] == discard[1] or card[0] == "w":
+                if card[1] == discard[1]:
                     can_play = True
                     playable_cards.append(card)
             if playable_cards != []:
@@ -195,6 +195,21 @@ while True:#mainloop
                         break
                     except:
                         pass
+                server.sendall(chosen_card.encode())
+                choose = server.recv(1024).decode()
+                if choose == "choose colour":
+                    print("Choose a colour for your wildcard.\n(1) red  (2) green  (3) blue  (4) yellow")
+                    while True:
+                        try:
+                            colour = ["r","g","b","y"][int(input("number >>>"))-1]
+                            break
+                        except:
+                            pass
+                    server.sendall(colour.encode())
+                    server.recv(1024)
+                    server.sendall(b"_")
+                else:
+                    server.sendall(b"_")
             else:
                 print("You cant respond to the plus cards. Now drawing...")
                 server.sendall(b"no response")
