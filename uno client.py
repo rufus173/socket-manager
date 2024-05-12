@@ -162,6 +162,7 @@ while True:#mainloop
                 print("\n\n\nThere were no cards for you to play,\n meaning you drew one.\n\n\n")
                 server.sendall(b"draw")
                 hand.append(server.recv(1024).decode())
+                time.sleep(1)
         case "plus":
             server.sendall(b"_")
             hand = server.recv(4096).decode().split(",")
@@ -211,6 +212,9 @@ while True:#mainloop
                 else:
                     server.sendall(b"_")
             else:
-                print("You cant respond to the plus cards. Now drawing...")
+                print("\n\nYou cant respond to the plus cards. Now drawing...\n\n")
                 server.sendall(b"no response")
             hand = server.recv(4096).decode().split(",")
+            time.sleep(1)
+            print("Your new hand:")
+            display(hand)
